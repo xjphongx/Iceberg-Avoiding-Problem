@@ -3,6 +3,6 @@ Iceberg avoiding problem
 
 Group members:
 
-Ada Lovelace adalovelace@csu.fullerton.edu
+Timothy Bui timothybui98@csu.fullerton.edu
 
-Charles Babbage charlesbab@csu.fullerton.edu
+Jimmy Phong 
