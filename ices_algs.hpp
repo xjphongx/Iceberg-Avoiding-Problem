@@ -27,7 +27,7 @@ namespace ices {
 //
 // The grid must be non-empty.
 unsigned int iceberg_avoiding_exhaustive(const grid& setting) {
-    
+
   // grid must be non-empty.
   assert(setting.rows() > 0);
   assert(setting.columns() > 0);
@@ -37,9 +37,25 @@ unsigned int iceberg_avoiding_exhaustive(const grid& setting) {
   assert(steps < 64);
 
   unsigned int count_paths = 0;
-    
+
   // TODO: implement the exhaustive optimization algorithm, then delete this
   // comment.
+
+  for(unsigned bits = 0; bits <= (pow(2, steps)-1); bits++)
+  {
+    grid candidate = grid(setting.rows(),setting.columns());
+    for(unsigned k = 0; k <= steps-1; k++)
+    {
+      bits = (bits>>k)&1;
+      if(bits == 1) // columns
+      {
+        candidate.set(setting.rows(), setting.columns()+1, CELL_WATER);
+      }else // rows
+      {
+        candidate.set(setting.rows()+1, setting.columns(), CELL_WATER);
+      }
+    }
+  }
 
   return count_paths;
 }
@@ -58,11 +74,32 @@ unsigned int iceberg_avoiding_dyn_prog(const grid& setting) {
   const int DIM=100;
   std::vector<std::vector<unsigned>> A(DIM, std::vector<unsigned>(DIM));
 
-  A[0][0] = 1;
-    
+  A[0][0] = 1; // base case
+
   // TODO: implement the dynamic programming algorithm, then delete this
   // comment.
-  
+  for(unsigned i = 0; i <= (setting.rows()-1); i++)
+  {
+    for(unsigned j = 0; j <= (setting.columns()-1); j++)
+    {
+      if(setting.get(i,j) == CELL_ICEBERG)
+      {
+        A[i][j] = 0;
+        continue;
+      }
+      unsigned from_above = 0;
+      unsigned from_left = 0;
+      if (i > 0 && A[i-1][j] != 0)
+      {
+        from_above = A[i-1][j];
+      }
+      if (i > 0 && A[i][j-1] != 0)
+      {
+        from_left = A[i][j-1];
+      }
+      A[i][j] = from_above + from_left;
+    }
+  }
   return A[setting.rows()-1][setting.columns()-1];
 }
 
