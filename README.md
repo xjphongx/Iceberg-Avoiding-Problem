@@ -5,4 +5,4 @@ Group members:
 
 Timothy Bui timothybui98@csu.fullerton.edu
 
-Jimmy Phong 
+Jimmy Phong jimmyphong16@csu.fullerton.edu
