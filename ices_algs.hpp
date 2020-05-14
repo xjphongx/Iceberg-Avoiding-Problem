@@ -55,6 +55,9 @@ unsigned int iceberg_avoiding_exhaustive(const grid& setting) {
         candidate.set(setting.rows()+1, setting.columns(), CELL_WATER);
       }
     }
+    // if candidate stays inside the grid and never crosses an X cell:
+    // count_paths++;
+
   }
 
   return count_paths;
