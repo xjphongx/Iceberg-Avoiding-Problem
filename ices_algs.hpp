@@ -38,34 +38,35 @@ unsigned int iceberg_avoiding_exhaustive(const grid& setting) {
 
   unsigned int count_paths = 0;
 
-  // TODO: implement the exhaustive optimization algorithm, then delete this
-  // comment.
-
   for(unsigned bits = 0; bits <= (pow(2, steps)-1); bits++)
   {
-    //grid candidate = grid(setting.rows(),setting.columns());
+    //initialize candidate path
     path candidatePath(setting);
+
+    //loop through grid
     for(unsigned k = 0; k <= steps-1; k++)
     {
       unsigned bit = (bits>>k)&1;
+
       if(bit == 1) // columns
       {
         if(candidatePath.is_step_valid(STEP_DIRECTION_RIGHT))
-        {
+        { //go right if valid
           candidatePath.add_step(STEP_DIRECTION_RIGHT);
         }
       }else // rows
       {
         if(candidatePath.is_step_valid(STEP_DIRECTION_DOWN))
-        {
+        { // go down if valid
           candidatePath.add_step(STEP_DIRECTION_DOWN);
         }
       }
     }
+
     // if candidate stays inside the grid and never crosses an X cell:
     if(candidatePath.final_row() == setting.rows()-1 &&
     candidatePath.final_column() == setting.columns()-1)
-    {
+    { // increment total number of paths
       count_paths++;
     }
   }
@@ -88,23 +89,34 @@ unsigned int iceberg_avoiding_dyn_prog(const grid& setting) {
 
   A[0][0] = 1; // base case
 
-  // TODO: implement the dynamic programming algorithm, then delete this
-  // comment.
+  //loop through rows
   for(unsigned i = 0; i <= (setting.rows()-1); i++)
   {
+    //loop through columns
     for(unsigned j = 0; j <= (setting.columns()-1); j++)
     {
+      //variables to hold number of paths
+      //coming in from above and left
       unsigned from_above = 0;
       unsigned from_left = 0;
-      if (i > 0 && A[i-1][j] != 0)
+
+      //setting values of variables to hold number
+      //of paths coming in from above and left
+      //after the starting cell
+      if (i > 0)
       {
         from_above = A[i-1][j];
       }
-      if (j > 0 && A[i][j-1] != 0)
+      if (j > 0)
       {
         from_left = A[i][j-1];
       }
+      //adding together number of paths from
+      //both directions into the current cell
       A[i][j] += from_above + from_left;
+
+      //if current cell is an iceberg,
+      //disregard everything above
       if(setting.get(i,j) == CELL_ICEBERG)
       {
         A[i][j] = 0;
