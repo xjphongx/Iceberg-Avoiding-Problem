@@ -27,20 +27,63 @@ namespace ices {
 //
 // The grid must be non-empty.
 unsigned int iceberg_avoiding_exhaustive(const grid& setting) {
-    
+  //std::cout<<setting.rows()<<std::endl;
+  //std::cout<<setting.columns()<<std::endl;
   // grid must be non-empty.
   assert(setting.rows() > 0);
   assert(setting.columns() > 0);
 
   // Compute the path length, and check that it is legal.
   const size_t steps = setting.rows() + setting.columns() - 2;
+  
   assert(steps < 64);
 
   unsigned int count_paths = 0;
-    
-  // TODO: implement the exhaustive optimization algorithm, then delete this
-  // comment.
+ 
 
+    for(unsigned int i =0; i <= (pow(2,steps)-1);i++)
+    {
+       //std::cout<<"Inside first forloop"<<std::endl;
+       //candidate path
+       path candidatePath(setting);
+       //std::cout<< "creating path object"<<std::endl;
+       for(unsigned int k = 0; k <= steps-1;k++){
+         //std::cout<<"Inside Second forloop"<<std::endl;
+          unsigned int bit = (i>>k)&1;
+          if(bit == 1) //columns
+          {                 
+            if(candidatePath.is_step_valid(STEP_DIRECTION_RIGHT))
+            {
+               //if step is valid, add the step
+               candidatePath.add_step(STEP_DIRECTION_RIGHT);
+            }
+          }else //rows
+          {
+            if(candidatePath.is_step_valid(STEP_DIRECTION_DOWN))
+            {
+               //if step is valid, add the step
+               candidatePath.add_step(STEP_DIRECTION_DOWN);
+            }
+          }
+        
+       }
+
+       //if candidate stays inside the grid
+  
+      if(candidatePath.final_column()==(setting.columns()-1)
+      &&candidatePath.final_row()==(setting.rows()-1))
+      {
+          count_paths++;
+      }
+      //std::cout<<candidatePath.final_row()<<std::endl;
+      //std::cout<<candidatePath.final_column()<<std::endl;
+    
+      
+    }
+  
+
+
+  //std::cout<<"End of function"<<std::endl;
   return count_paths;
 }
 
