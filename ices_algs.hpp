@@ -43,23 +43,32 @@ unsigned int iceberg_avoiding_exhaustive(const grid& setting) {
 
   for(unsigned bits = 0; bits <= (pow(2, steps)-1); bits++)
   {
-    grid candidate = grid(setting.rows(),setting.columns());
+    //grid candidate = grid(setting.rows(),setting.columns());
+    path candidatePath(setting);
     for(unsigned k = 0; k <= steps-1; k++)
     {
-      bits = (bits>>k)&1;
-      if(bits == 1) // columns
+      unsigned bit = (bits>>k)&1;
+      if(bit == 1) // columns
       {
-        candidate.set(setting.rows(), setting.columns()+1, CELL_WATER);
+        if(candidatePath.is_step_valid(STEP_DIRECTION_RIGHT))
+        {
+          candidatePath.add_step(STEP_DIRECTION_RIGHT);
+        }
       }else // rows
       {
-        candidate.set(setting.rows()+1, setting.columns(), CELL_WATER);
+        if(candidatePath.is_step_valid(STEP_DIRECTION_DOWN))
+        {
+          candidatePath.add_step(STEP_DIRECTION_DOWN);
+        }
       }
     }
     // if candidate stays inside the grid and never crosses an X cell:
-    // count_paths++;
-
+    if(candidatePath.final_row() == setting.rows()-1 &&
+    candidatePath.final_column() == setting.columns()-1)
+    {
+      count_paths++;
+    }
   }
-
   return count_paths;
 }
 
