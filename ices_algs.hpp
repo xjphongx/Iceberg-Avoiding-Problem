@@ -105,7 +105,7 @@ unsigned int iceberg_avoiding_dyn_prog(const grid& setting) {
       {
         from_above = A[i-1][j];
       }
-      if (i > 0 && A[i][j-1] != 0)
+      if (j > 0 && A[i][j-1] != 0)
       {
         from_left = A[i][j-1];
       }
