@@ -43,25 +43,25 @@ public:
   }
 
   // Accessors.
-  constexpr coordinate rows() const { return cells_.size(); }
-  constexpr coordinate columns() const { return cells_.front().size(); }
+   coordinate rows() const { return cells_.size(); }
+   coordinate columns() const { return cells_.front().size(); }
 
   // Test whether the given value is a valid row or column number.
-  constexpr bool is_row(coordinate row) const { return row < rows(); }
-  constexpr bool is_column(coordinate column) const { return column < columns(); }
-  constexpr bool is_row_column(coordinate row, coordinate column) const {
+   bool is_row(coordinate row) const { return row < rows(); }
+   bool is_column(coordinate column) const { return column < columns(); }
+   bool is_row_column(coordinate row, coordinate column) const {
     return is_row(row) && is_column(column);
   }
 
   // Return the cell at the given row and column.
-  constexpr cell_kind get(coordinate row, coordinate column) const {
+   cell_kind get(coordinate row, coordinate column) const {
     assert(is_row_column(row, column));
     return cells_[row][column];
   }
 
   // Set the contents of the cell at the given row and column.
   // (0, 0) may only be CELL_WATER. Other coordinates may be any kind.
-  constexpr void set(coordinate row, coordinate column, cell_kind kind) {
+   void set(coordinate row, coordinate column, cell_kind kind) {
     assert(is_row_column(row, column));
 
     if ((row == 0) && (column == 0)) {
@@ -74,7 +74,7 @@ public:
   // Return true if it is valid to step into the given row and column.
   // This is the case when those are valid row-column values, and also
   // that cell is not CELL_ICEBERG.
-  constexpr bool may_step(coordinate row, coordinate column) const {
+   bool may_step(coordinate row, coordinate column) const {
     return (is_row_column(row, column) &&
             (cells_[row][column] != CELL_ICEBERG));
   }
