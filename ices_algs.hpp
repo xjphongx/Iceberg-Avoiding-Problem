@@ -27,63 +27,48 @@ namespace ices {
 //
 // The grid must be non-empty.
 unsigned int iceberg_avoiding_exhaustive(const grid& setting) {
-  //std::cout<<setting.rows()<<std::endl;
-  //std::cout<<setting.columns()<<std::endl;
+
   // grid must be non-empty.
   assert(setting.rows() > 0);
   assert(setting.columns() > 0);
 
   // Compute the path length, and check that it is legal.
   const size_t steps = setting.rows() + setting.columns() - 2;
-  
   assert(steps < 64);
 
   unsigned int count_paths = 0;
- 
 
-    for(unsigned int i =0; i <= (pow(2,steps)-1);i++)
+  // TODO: implement the exhaustive optimization algorithm, then delete this
+  // comment.
+
+  for(unsigned bits = 0; bits <= (pow(2, steps)-1); bits++)
+  {
+    //grid candidate = grid(setting.rows(),setting.columns());
+    path candidatePath(setting);
+    for(unsigned k = 0; k <= steps-1; k++)
     {
-       //std::cout<<"Inside first forloop"<<std::endl;
-       //candidate path
-       path candidatePath(setting);
-       //std::cout<< "creating path object"<<std::endl;
-       for(unsigned int k = 0; k <= steps-1;k++){
-         //std::cout<<"Inside Second forloop"<<std::endl;
-          unsigned int bit = (i>>k)&1;
-          if(bit == 1) //columns
-          {                 
-            if(candidatePath.is_step_valid(STEP_DIRECTION_RIGHT))
-            {
-               //if step is valid, add the step
-               candidatePath.add_step(STEP_DIRECTION_RIGHT);
-            }
-          }else //rows
-          {
-            if(candidatePath.is_step_valid(STEP_DIRECTION_DOWN))
-            {
-               //if step is valid, add the step
-               candidatePath.add_step(STEP_DIRECTION_DOWN);
-            }
-          }
-        
-       }
-
-       //if candidate stays inside the grid
-  
-      if(candidatePath.final_column()==(setting.columns()-1)
-      &&candidatePath.final_row()==(setting.rows()-1))
+      unsigned bit = (bits>>k)&1;
+      if(bit == 1) // columns
       {
-          count_paths++;
+        if(candidatePath.is_step_valid(STEP_DIRECTION_RIGHT))
+        {
+          candidatePath.add_step(STEP_DIRECTION_RIGHT);
+        }
+      }else // rows
+      {
+        if(candidatePath.is_step_valid(STEP_DIRECTION_DOWN))
+        {
+          candidatePath.add_step(STEP_DIRECTION_DOWN);
+        }
       }
-      //std::cout<<candidatePath.final_row()<<std::endl;
-      //std::cout<<candidatePath.final_column()<<std::endl;
-    
-      
     }
-  
-
-
-  //std::cout<<"End of function"<<std::endl;
+    // if candidate stays inside the grid and never crosses an X cell:
+    if(candidatePath.final_row() == setting.rows()-1 &&
+    candidatePath.final_column() == setting.columns()-1)
+    {
+      count_paths++;
+    }
+  }
   return count_paths;
 }
 
@@ -101,11 +86,31 @@ unsigned int iceberg_avoiding_dyn_prog(const grid& setting) {
   const int DIM=100;
   std::vector<std::vector<unsigned>> A(DIM, std::vector<unsigned>(DIM));
 
-  A[0][0] = 1;
-    
+  A[0][0] = 1; // base case
+
   // TODO: implement the dynamic programming algorithm, then delete this
   // comment.
-  
+  for(unsigned i = 0; i <= (setting.rows()-1); i++)
+  {
+    for(unsigned j = 0; j <= (setting.columns()-1); j++)
+    {
+      unsigned from_above = 0;
+      unsigned from_left = 0;
+      if (i > 0 && A[i-1][j] != 0)
+      {
+        from_above = A[i-1][j];
+      }
+      if (j > 0 && A[i][j-1] != 0)
+      {
+        from_left = A[i][j-1];
+      }
+      A[i][j] += from_above + from_left;
+      if(setting.get(i,j) == CELL_ICEBERG)
+      {
+        A[i][j] = 0;
+      }
+    }
+  }
   return A[setting.rows()-1][setting.columns()-1];
 }
 
